@@ -7,8 +7,8 @@
 ## 👤 Identitas Mahasiswa
 * **Nama:** Ghazy Nabil Alghfari
 * **NIM:** 707012400023
-* **Kelas:** D3IF 48-03
-* **Program Studi:** D3 Rekayasa Perangkat Lunak Aplikasi (RPLA)
+* **Kelas:** D4SIKC
+* **Program Studi:** D4 Sistem Informasi Kota Cerdas (D4SIKC)
 * **Fakultas:** Fakultas Ilmu Terapan (FIT)
 * **Institusi:** Universitas Telkom
 * **Tahun Akademik:** Semester Genap 2025/2026
@@ -60,7 +60,7 @@ Pekan 01/
 
 ### C. Tugas Praktikum - `nusantara_cerdas_707012400023`
 * Dasbor interaktif pilar *smart city* Kota Nusantara Cerdas dengan arsitektur modular:
-  * **Header Kota & Pengembang:** Memuat identitas Kota Nusantara dan identitas resmi mahasiswa (Ghazy Nabil Alghfari, 707012400023, 48-03).
+  * **Header Kota & Pengembang:** Memuat identitas Kota Nusantara dan identitas resmi mahasiswa (Ghazy Nabil Alghfari, 707012400023, D4SIKC).
   * **Panel Laporan Warga:** Mengelola laporan warga harian secara reaktif:
     * Tombol *Laporan Masuk* (menambah laporan).
     * Tombol *Laporan Selesai* (mengurangi laporan dengan proteksi batas non-negatif $\ge 0$).

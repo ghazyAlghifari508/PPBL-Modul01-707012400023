@@ -108,7 +108,7 @@ class KepalaKota extends StatelessWidget {
                     ),
                     SizedBox(height: 2),
                     Text(
-                      'NIM: 707012400023  •  Kelas: 48-03',
+                      'NIM: 707012400023  •  Kelas: D4SIKC',
                       style: TextStyle(
                         fontSize: 11,
                         color: Colors.white70,

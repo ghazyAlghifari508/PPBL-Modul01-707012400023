@@ -1,3 +1,11 @@
+# Screenshots
+screenshots/
+**/screenshots/
+
+# Microsoft Word temporary lock files
+~$*
+*.tmp
+
 # Miscellaneous
 *.class
 *.log

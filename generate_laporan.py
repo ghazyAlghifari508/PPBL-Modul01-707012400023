@@ -2,7 +2,7 @@ import os
 import docx
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
+from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
@@ -14,7 +14,7 @@ def set_cell_background(cell, fill_hex):
     shd.set(qn('w:fill'), fill_hex)
     tcPr.append(shd)
 
-def set_cell_margins(cell, top=120, bottom=120, left=160, right=160):
+def set_cell_margins(cell, top=100, bottom=100, left=150, right=150):
     tcPr = cell._tc.get_or_add_tcPr()
     tcMar = OxmlElement('w:tcMar')
     for m, val in [('top', top), ('bottom', bottom), ('left', left), ('right', right)]:
@@ -24,7 +24,7 @@ def set_cell_margins(cell, top=120, bottom=120, left=160, right=160):
         tcMar.append(node)
     tcPr.append(tcMar)
 
-def set_table_borders(table, color="D3D3D3"):
+def set_table_borders(table, color="333333"):
     tblPr = table._tbl.tblPr
     tblBorders = OxmlElement('w:tblBorders')
     for border_name in ['top', 'left', 'bottom', 'right', 'insideH']:
@@ -35,8 +35,27 @@ def set_table_borders(table, color="D3D3D3"):
         border.set(qn('w:color'), color)
         tblBorders.append(border)
     border_v = OxmlElement('w:insideV')
-    border_v.set(qn('w:val'), 'none')
+    border_v.set(qn('w:val'), 'single')
+    border_v.set(qn('w:sz'), '4')
+    border_v.set(qn('w:space'), '0')
+    border_v.set(qn('w:color'), color)
     tblBorders.append(border_v)
+    tblPr.append(tblBorders)
+
+def set_code_box_border(table, color="CCCCCC"):
+    tblPr = table._tbl.tblPr
+    tblBorders = OxmlElement('w:tblBorders')
+    for border_name in ['top', 'left', 'bottom', 'right']:
+        border = OxmlElement(f'w:{border_name}')
+        border.set(qn('w:val'), 'single')
+        border.set(qn('w:sz'), '4')
+        border.set(qn('w:space'), '0')
+        border.set(qn('w:color'), color)
+        tblBorders.append(border)
+    for border_name in ['insideH', 'insideV']:
+        border = OxmlElement(f'w:{border_name}')
+        border.set(qn('w:val'), 'none')
+        tblBorders.append(border)
     tblPr.append(tblBorders)
 
 def add_header_footer(doc):
@@ -48,31 +67,31 @@ def add_header_footer(doc):
         hrun = hp.add_run("Pemrograman Perangkat Bergerak Lanjut • Modul 1 (Pekan 01)")
         hrun.font.name = "Times New Roman"
         hrun.font.size = Pt(8.5)
-        hrun.font.color.rgb = RGBColor(120, 120, 120)
+        hrun.font.color.rgb = RGBColor(100, 100, 100)
         
         footer = s.footer
         fp = footer.paragraphs[0]
         fp.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        frun = fp.add_run("Ghazy Nabil Alghfari (707012400023) - D3IF 48-03 • Telkom University")
+        frun = fp.add_run("Ghazy Nabil Alghfari (707012400023) - D4SIKC • Universitas Telkom")
         frun.font.name = "Times New Roman"
         frun.font.size = Pt(8.5)
-        frun.font.color.rgb = RGBColor(120, 120, 120)
+        frun.font.color.rgb = RGBColor(100, 100, 100)
 
 def main():
     doc = docx.Document()
     
-    # Set standard margins (2.54 cm all around)
+    # 1 inch margins all around
     for section in doc.sections:
         section.top_margin = Inches(1.0)
         section.bottom_margin = Inches(1.0)
         section.left_margin = Inches(1.0)
         section.right_margin = Inches(1.0)
     
-    # Configure base styles
+    # Base Normal Style: Times New Roman, 11.5pt, Justified for narrative body paragraphs
     normal_style = doc.styles['Normal']
     normal_style.font.name = 'Times New Roman'
     normal_style.font.size = Pt(11.5)
-    normal_style.font.color.rgb = RGBColor(30, 30, 30)
+    normal_style.font.color.rgb = RGBColor(0, 0, 0)
     normal_style.paragraph_format.line_spacing = 1.15
     normal_style.paragraph_format.space_after = Pt(4)
     normal_style.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
@@ -80,15 +99,15 @@ def main():
     add_header_footer(doc)
     
     # ==========================================
-    # 1. HALAMAN SAMPUL (COVER)
+    # 1. HALAMAN SAMPUL (COVER) - HITAM PUTIH POLOS
     # ==========================================
     p_inst = doc.add_paragraph()
     p_inst.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_inst.paragraph_format.space_after = Pt(2)
-    r_inst = p_inst.add_run("KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI\nUNIVERSITAS TELKOM\nFAKULTAS ILMU TERAPAN\nPROGRAM STUDI D3 REKAYASA PERANGKAT LUNAK APLIKASI")
+    r_inst = p_inst.add_run("KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI\nUNIVERSITAS TELKOM\nFAKULTAS ILMU TERAPAN\nPROGRAM STUDI D4 SISTEM INFORMASI KOTA CERDAS")
     r_inst.bold = True
     r_inst.font.size = Pt(12)
-    r_inst.font.color.rgb = RGBColor(13, 92, 58) # Nusantara Green
+    r_inst.font.color.rgb = RGBColor(0, 0, 0)
     
     p_space = doc.add_paragraph()
     p_space.paragraph_format.space_after = Pt(14)
@@ -107,16 +126,16 @@ def main():
     p_title.paragraph_format.space_after = Pt(4)
     r_title = p_title.add_run("LAPORAN PRAKTIKUM\nPEMROGRAMAN PERANGKAT BERGERAK LANJUT")
     r_title.bold = True
-    r_title.font.size = Pt(15)
-    r_title.font.color.rgb = RGBColor(13, 92, 58)
+    r_title.font.size = Pt(14)
+    r_title.font.color.rgb = RGBColor(0, 0, 0)
     
     p_sub = doc.add_paragraph()
     p_sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_sub.paragraph_format.space_after = Pt(24)
     r_sub = p_sub.add_run("MODUL I\nPENGENALAN FLUTTER, WIDGET TREE, DAN DASAR MANAJEMEN STATE")
     r_sub.bold = True
-    r_sub.font.size = Pt(12.5)
-    r_sub.font.color.rgb = RGBColor(70, 70, 70)
+    r_sub.font.size = Pt(12)
+    r_sub.font.color.rgb = RGBColor(0, 0, 0)
     
     p_desc = doc.add_paragraph()
     p_desc.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -124,15 +143,16 @@ def main():
     r_desc = p_desc.add_run("Disusun untuk Memenuhi Komponen Penilaian Mata Kuliah\nPemrograman Perangkat Bergerak Lanjut (PPBL)")
     r_desc.italic = True
     r_desc.font.size = Pt(10.5)
-    r_desc.font.color.rgb = RGBColor(100, 100, 100)
+    r_desc.font.color.rgb = RGBColor(80, 80, 80)
     
-    # Student Info Box (Table)
-    tbl_id = doc.add_table(rows=5, cols=3)
+    # Student Info Box (Table) - Monochrome Plain
+    tbl_id = doc.add_table(rows=6, cols=3)
     tbl_id.alignment = WD_TABLE_ALIGNMENT.CENTER
     id_data = [
         ("Nama Mahasiswa", ":", "Ghazy Nabil Alghfari"),
         ("Nomor Induk Mahasiswa (NIM)", ":", "707012400023"),
-        ("Kelas", ":", "D3IF 48-03"),
+        ("Kelas", ":", "D4SIKC"),
+        ("Program Studi", ":", "D4 Sistem Informasi Kota Cerdas"),
         ("Dosen Pengampu", ":", "Tim Dosen Pemrograman Perangkat Bergerak Lanjut"),
         ("Tahun Akademik", ":", "2025/2026 (Semester Genap)"),
     ]
@@ -146,6 +166,7 @@ def main():
         r0 = p0.add_run(k)
         r0.bold = True
         r0.font.size = Pt(10.5)
+        r0.font.color.rgb = RGBColor(0, 0, 0)
         
         c1 = row.cells[1]
         c1.width = Inches(0.2)
@@ -154,6 +175,7 @@ def main():
         r1 = p1.add_run(sep)
         r1.bold = True
         r1.font.size = Pt(10.5)
+        r1.font.color.rgb = RGBColor(0, 0, 0)
         
         c2 = row.cells[2]
         c2.width = Inches(3.5)
@@ -161,51 +183,52 @@ def main():
         p2.paragraph_format.space_after = Pt(2)
         r2 = p2.add_run(val)
         r2.font.size = Pt(10.5)
+        r2.font.color.rgb = RGBColor(0, 0, 0)
         if i in [0, 1, 2]:
             r2.bold = True
-            r2.font.color.rgb = RGBColor(13, 92, 58)
     
     p_foot = doc.add_paragraph()
     p_foot.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_foot.paragraph_format.space_before = Pt(36)
+    p_foot.paragraph_format.space_before = Pt(32)
     r_foot = p_foot.add_run("BANDUNG\n2026")
     r_foot.bold = True
     r_foot.font.size = Pt(11.5)
+    r_foot.font.color.rgb = RGBColor(0, 0, 0)
     
     doc.add_page_break()
     
-    # Helper functions for report sections
+    # Helper formatting functions
     def add_h1(text):
         p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(14)
+        p.paragraph_format.space_before = Pt(16)
         p.paragraph_format.space_after = Pt(6)
         p.paragraph_format.keep_with_next = True
         r = p.add_run(text)
         r.bold = True
         r.font.size = Pt(13.5)
-        r.font.color.rgb = RGBColor(13, 92, 58)
+        r.font.color.rgb = RGBColor(0, 0, 0)
         return p
 
     def add_h2(text):
         p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(10)
+        p.paragraph_format.space_before = Pt(12)
         p.paragraph_format.space_after = Pt(4)
         p.paragraph_format.keep_with_next = True
         r = p.add_run(text)
         r.bold = True
         r.font.size = Pt(12)
-        r.font.color.rgb = RGBColor(27, 77, 62)
+        r.font.color.rgb = RGBColor(0, 0, 0)
         return p
 
     def add_h3(text):
         p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(6)
+        p.paragraph_format.space_before = Pt(8)
         p.paragraph_format.space_after = Pt(2)
         p.paragraph_format.keep_with_next = True
         r = p.add_run(text)
         r.bold = True
         r.font.size = Pt(11.5)
-        r.font.color.rgb = RGBColor(45, 55, 72)
+        r.font.color.rgb = RGBColor(0, 0, 0)
         return p
 
     def add_p(text, bold_prefix=None, italic=False):
@@ -216,8 +239,10 @@ def main():
         if bold_prefix:
             rb = p.add_run(bold_prefix)
             rb.bold = True
+            rb.font.color.rgb = RGBColor(0, 0, 0)
         r = p.add_run(text)
         r.italic = italic
+        r.font.color.rgb = RGBColor(0, 0, 0)
         return p
 
     def add_bullet(text, bold_prefix=None):
@@ -228,22 +253,39 @@ def main():
         if bold_prefix:
             rb = p.add_run(bold_prefix)
             rb.bold = True
-        p.add_run(text)
+            rb.font.color.rgb = RGBColor(0, 0, 0)
+        r = p.add_run(text)
+        r.font.color.rgb = RGBColor(0, 0, 0)
         return p
 
     def add_code(code_str):
+        """
+        Creates a clean code box with strict LEFT-ALIGNMENT on every line,
+        preventing Word from justifying spaces between words.
+        """
         tbl = doc.add_table(rows=1, cols=1)
         tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
+        tbl.autofit = False
         cell = tbl.cell(0, 0)
-        set_cell_background(cell, "F8F9FA")
-        set_cell_margins(cell, top=100, bottom=100, left=140, right=140)
-        p = cell.paragraphs[0]
-        p.paragraph_format.line_spacing = 1.05
-        p.paragraph_format.space_after = Pt(0)
-        r = p.add_run(code_str)
-        r.font.name = "Consolas"
-        r.font.size = Pt(9.0)
-        r.font.color.rgb = RGBColor(34, 40, 49)
+        cell.width = Inches(6.5)
+        set_cell_background(cell, "F9F9F9")
+        set_code_box_border(table=tbl, color="CCCCCC")
+        set_cell_margins(cell, top=100, bottom=100, left=150, right=150)
+        
+        lines = code_str.strip().split('\n')
+        for idx, line in enumerate(lines):
+            p = cell.paragraphs[0] if idx == 0 else cell.add_paragraph()
+            p.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            p.paragraph_format.line_spacing = 1.05
+            p.paragraph_format.space_before = Pt(0)
+            p.paragraph_format.space_after = Pt(0)
+            
+            clean_line = line.replace('\t', '  ').rstrip()
+            r = p.add_run(clean_line if clean_line else ' ')
+            r.font.name = "Consolas"
+            r.font.size = Pt(8.5)
+            r.font.color.rgb = RGBColor(0, 0, 0)
+            
         doc.add_paragraph().paragraph_format.space_after = Pt(2)
 
     def add_figure(img_path, caption_num, caption_text, width=Inches(2.7)):
@@ -262,6 +304,7 @@ def main():
             rcap_num = p_cap.add_run(f"Gambar {caption_num}. ")
             rcap_num.bold = True
             rcap_num.font.size = Pt(10)
+            rcap_num.font.color.rgb = RGBColor(0, 0, 0)
             rcap_text = p_cap.add_run(caption_text)
             rcap_text.italic = True
             rcap_text.font.size = Pt(10)
@@ -293,7 +336,7 @@ def main():
     add_bullet(" Memverifikasi keandalan kode melalui penulisan uji widget otomatis (widget testing) serta memastikan kode bebas dari peringatan linter (flutter analyze: zero issues).", "4.")
 
     # ==========================================
-    # 3. ALAT DAN BAHAN
+    # 3. ALAT DAN BAHAN - HITAM PUTIH POLOS
     # ==========================================
     add_h1("3. ALAT DAN BAHAN")
     add_p("Untuk menunjang pelaksanaan seluruh rangkaian praktikum dan tugas mandiri pada Modul 1 ini, digunakan lingkungan pengembangan dengan spesifikasi perangkat keras dan perangkat lunak sebagai berikut:")
@@ -301,17 +344,17 @@ def main():
     add_h2("3.1 Spesifikasi Perangkat Keras (Hardware)")
     tbl_hw = doc.add_table(rows=6, cols=3)
     tbl_hw.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(tbl_hw)
+    set_table_borders(tbl_hw, color="000000")
     hw_headers = ["No", "Komponen Perangkat Keras", "Spesifikasi yang Digunakan"]
     for j, h in enumerate(hw_headers):
         cell = tbl_hw.cell(0, j)
-        set_cell_background(cell, "0D5C3A")
+        set_cell_background(cell, "F2F2F2") # Polos abu-abu muda
         set_cell_margins(cell, top=100, bottom=100, left=140, right=140)
         p = cell.paragraphs[0]
         r = p.add_run(h)
         r.bold = True
         r.font.size = Pt(10)
-        r.font.color.rgb = RGBColor(255, 255, 255)
+        r.font.color.rgb = RGBColor(0, 0, 0)
     
     hw_data = [
         ("1", "Perangkat Komputer", "Laptop ASUS / Windows PC x64 Architecture"),
@@ -324,14 +367,13 @@ def main():
         row = tbl_hw.rows[i+1]
         for j, val in enumerate(row_data):
             cell = row.cells[j]
-            if (i % 2 == 1):
-                set_cell_background(cell, "F7FAFC")
             set_cell_margins(cell, top=80, bottom=80, left=140, right=140)
             p = cell.paragraphs[0]
             p.paragraph_format.line_spacing = 1.05
             p.paragraph_format.space_after = Pt(0)
             r = p.add_run(val)
             r.font.size = Pt(9.5)
+            r.font.color.rgb = RGBColor(0, 0, 0)
             if j == 0:
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
                 r.bold = True
@@ -339,17 +381,17 @@ def main():
     add_h2("3.2 Spesifikasi Perangkat Lunak (Software) dan SDK")
     tbl_sw = doc.add_table(rows=10, cols=3)
     tbl_sw.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(tbl_sw)
+    set_table_borders(tbl_sw, color="000000")
     sw_headers = ["No", "Perangkat Lunak / SDK", "Versi & Konfigurasi Aktual"]
     for j, h in enumerate(sw_headers):
         cell = tbl_sw.cell(0, j)
-        set_cell_background(cell, "0D5C3A")
+        set_cell_background(cell, "F2F2F2")
         set_cell_margins(cell, top=100, bottom=100, left=140, right=140)
         p = cell.paragraphs[0]
         r = p.add_run(h)
         r.bold = True
         r.font.size = Pt(10)
-        r.font.color.rgb = RGBColor(255, 255, 255)
+        r.font.color.rgb = RGBColor(0, 0, 0)
         
     sw_data = [
         ("1", "Sistem Operasi", "Microsoft Windows 11 Home 64-bit (Build 26100)"),
@@ -366,14 +408,13 @@ def main():
         row = tbl_sw.rows[i+1]
         for j, val in enumerate(row_data):
             cell = row.cells[j]
-            if (i % 2 == 1):
-                set_cell_background(cell, "F7FAFC")
             set_cell_margins(cell, top=80, bottom=80, left=140, right=140)
             p = cell.paragraphs[0]
             p.paragraph_format.line_spacing = 1.05
             p.paragraph_format.space_after = Pt(0)
             r = p.add_run(val)
             r.font.size = Pt(9.5)
+            r.font.color.rgb = RGBColor(0, 0, 0)
             if j == 0:
                 p.alignment = WD_ALIGN_PARAGRAPH.CENTER
                 r.bold = True
@@ -455,7 +496,7 @@ class ProfilCard extends StatelessWidget {
     );
   }
 }""")
-    add_p("Penjelasan Kode: Widget Container digunakan sebagai pembungkus berdekorasi warna putih, radius sudut membulat 12 piksel, dan bayangan tipis. Di dalamnya, Row membagi area secara horizontal menjadi avatar profil (CircleAvatar) dan kolom informasi (Column) yang dibungkus Expanded agar teks nama panjang tidak menyebabkan overflow.")
+    add_p("Penjelasan Kode: Widget Container digunakan sebagai pembungkus berdekorasi warna putih, radius sudut membulat 12 piksel, dan bayangan tipis. Di dalamnya, Row membagi area secara horizontal menjadi avatar profil (CircleAvatar) dan kolom informasi (Column) yang dibungkus Expanded agar teks panjang tidak menyebabkan overflow.")
 
     add_h3("Langkah 3: Pembuatan Stateful Widget (lib/penghitung_suka.dart)")
     add_p("Dibuat komponen PenghitungSuka yang memiliki state lokal berupa variabel _jumlahSuka (int) dan _disukai (bool). Komponen ini diturunkan dari StatefulWidget dan dihubungkan dengan kelas _PenghitungSukaState.")
@@ -633,7 +674,7 @@ class NusantaraCerdasApp extends StatelessWidget {
 }""")
 
     add_h3("Langkah 3: Pembuatan StatelessWidget KepalaKota (lib/kepala_kota.dart)")
-    add_p("Widget ini menampilkan identitas Kota Nusantara dan identitas resmi mahasiswa pengembang. Menggunakan Container dengan dekorasi LinearGradient dan kartu identitas terstruktur:")
+    add_p("Widget ini menampilkan identitas Kota Nusantara dan identitas resmi mahasiswa pengembang (Ghazy Nabil Alghfari, NIM: 707012400023, Kelas: D4SIKC):")
     add_code("""import 'package:flutter/material.dart';
 
 class KepalaKota extends StatelessWidget {
@@ -715,7 +756,7 @@ class KepalaKota extends StatelessWidget {
                     ),
                     SizedBox(height: 2),
                     Text(
-                      'NIM: 707012400023  •  Kelas: 48-03',
+                      'NIM: 707012400023  •  Kelas: D4SIKC',
                       style: TextStyle(fontSize: 11, color: Colors.white70),
                     ),
                   ],
@@ -830,7 +871,6 @@ class _PanelLaporanWargaState extends State<PanelLaporanWarga> {
     });
   }
 
-  // Logika Penentuan Status Badge Dinamis
   String get _statusPelayanan {
     if (_jumlahLaporan < 5) return 'Pelayanan Lancar';
     if (_jumlahLaporan <= 10) return 'Pelayanan Sibuk';
@@ -838,9 +878,9 @@ class _PanelLaporanWargaState extends State<PanelLaporanWarga> {
   }
 
   Color get _statusColor {
-    if (_jumlahLaporan < 5) return const Color(0xFF2E7D32); // Hijau
-    if (_jumlahLaporan <= 10) return const Color(0xFFE65100); // Oranye
-    return const Color(0xFFC62828); // Merah
+    if (_jumlahLaporan < 5) return const Color(0xFF2E7D32);
+    if (_jumlahLaporan <= 10) return const Color(0xFFE65100);
+    return const Color(0xFFC62828);
   }
 
   IconData get _statusIcon {
@@ -851,9 +891,7 @@ class _PanelLaporanWargaState extends State<PanelLaporanWarga> {
 
   @override
   Widget build(BuildContext context) {
-    // Membangun tampilan card dengan tombol Laporan Masuk, Laporan Selesai, Reset Harian
-    // dan status badge yang berubah dinamis mengikuti nilai _jumlahLaporan.
-    // ... (Implementasi UI lengkap pada berkas proyek)
+    // Membangun tampilan card interaktif dengan tombol dan dynamic badge...
   }
 }""")
 
@@ -877,7 +915,7 @@ class _PanelLaporanWargaState extends State<PanelLaporanWarga> {
     add_h2("5.1 Bagian A: Praktikum (NO AI) – praktikum_widget")
     add_figure(os.path.join(img_dir, "praktikum_widget_awal.png"), "5.1", 
                "Tampilan Awal Aplikasi Praktikum Widget (NO AI) pada Emulator Pixel 4")
-    add_p("Penjelasan Gambar 5.1: Menampilkan antarmuka awal saat aplikasi baru diluncurkan. ProfilCard menampilkan nama pengembang Ghazy Nabil Alghfari, NIM 707012400023, dan Prodi D3IF. Pada bagian PenghitungSuka, counter awal bernilai 0 dan ikon hati dalam kondisi outline (belum disukai).")
+    add_p("Penjelasan Gambar 5.1: Menampilkan antarmuka awal saat aplikasi baru diluncurkan. ProfilCard menampilkan nama pengembang Ghazy Nabil Alghfari, NIM 707012400023, dan Prodi D4SIKC. Pada bagian PenghitungSuka, counter awal bernilai 0 dan ikon hati dalam kondisi outline (belum disukai).")
 
     add_figure(os.path.join(img_dir, "praktikum_widget_setelah_suka.png"), "5.2", 
                "Tampilan Setelah Tombol Suka Ditekan (Terjadi Perubahan State)")
@@ -899,7 +937,7 @@ class _PanelLaporanWargaState extends State<PanelLaporanWarga> {
     add_h2("5.3 Bagian C: Tugas Praktikum – nusantara_cerdas_707012400023")
     add_figure(os.path.join(img_dir, "nusantara_cerdas_awal.png"), "5.6", 
                "Tampilan Awal Dasbor Smart City Nusantara Cerdas (Status: Pelayanan Lancar)")
-    add_p("Penjelasan Gambar 5.6: Menampilkan kondisi awal aplikasi Dasbor Nusantara Cerdas. Header KepalaKota menampilkan identitas Kota Nusantara dan identitas resmi mahasiswa Ghazy Nabil Alghfari (NIM: 707012400023 • Kelas: 48-03 • PPBL 2026). Panel laporan menunjukkan 0 laporan aktif dengan Dynamic Status Badge hijau bertuliskan 'Pelayanan Lancar'. Tombol 'Laporan Selesai' berada dalam kondisi visual disabled karena jumlah laporan bernilai 0.")
+    add_p("Penjelasan Gambar 5.6: Menampilkan kondisi awal aplikasi Dasbor Nusantara Cerdas. Header KepalaKota menampilkan identitas Kota Nusantara dan identitas resmi mahasiswa Ghazy Nabil Alghfari (NIM: 707012400023 • Kelas: D4SIKC • PPBL 2026). Panel laporan menunjukkan 0 laporan aktif dengan Dynamic Status Badge hijau bertuliskan 'Pelayanan Lancar'. Tombol 'Laporan Selesai' berada dalam kondisi visual disabled karena jumlah laporan bernilai 0.")
 
     add_figure(os.path.join(img_dir, "nusantara_cerdas_sibuk.png"), "5.7", 
                "Tampilan Dasbor Nusantara Cerdas saat Pelayanan Sibuk (Jumlah Laporan: 6)")
@@ -935,7 +973,7 @@ class _PanelLaporanWargaState extends State<PanelLaporanWarga> {
     add_h2("6.4 Kendala / Galat yang Ditemukan dan Solusi Penanganannya")
     add_p("Selama proses pengerjaan praktikum dan tugas, ditemukan beberapa kendala teknis nyata di lingkungan pengembangan yang berhasil diatasi secara sistematis:")
     add_bullet("Kendala 1 – Ketiadaan Android NDK dan Ketidakcocokan Versi Build-Tools: Saat pertama kali mengompilasi proyek Android, Gradle memunculkan galat 'Failed to find Build Tools revision 36.0.0' dan tidak mendeteksi NDK 28. Solusi teknis: Mengunduh paket NDK versi 28.2.13676358 ke dalam direktori Android SDK, serta mengonfigurasi properti buildToolsVersion = \"36.1.0\" secara eksplisit di dalam android/app/build.gradle.kts agar sesuai dengan versi SDK Build-Tools yang terpasang di sistem.", "• ")
-    add_bullet("Kendala 2 – Layout Overflow pada Baris Identitas Pengembang (RenderFlex Overflowed by 22 pixels): Teks identitas pengembang 'Pengembang: Ghazy Nabil Alghfari' dan 'NIM: 707012400023 | 48-03' melebihi lebar layar jika diletakkan berdampingan dalam satu baris Row pada kontainer kartu kota. Solusi teknis: Mengubah tata letak kartu identitas mahasiswa menjadi susunan Column vertikal dengan tipografi berjenjang serta menambahkan badge 'PPBL 2026' di sisi kanan. Solusi ini memastikan nama lengkap dan NIM tampil utuh 100% tanpa terpotong (ellipsis) dan tanpa galat overflow pada emulator.", "• ")
+    add_bullet("Kendala 2 – Layout Overflow pada Baris Identitas Pengembang (RenderFlex Overflowed by 22 pixels): Teks identitas pengembang 'Pengembang: Ghazy Nabil Alghfari' dan 'NIM: 707012400023 | D4SIKC' melebihi lebar layar jika diletakkan berdampingan dalam satu baris Row pada kontainer kartu kota. Solusi teknis: Mengubah tata letak kartu identitas mahasiswa menjadi susunan Column vertikal dengan tipografi berjenjang serta menambahkan badge 'PPBL 2026' di sisi kanan. Solusi ini memastikan nama lengkap dan NIM tampil utuh 100% tanpa terpotong (ellipsis) dan tanpa galat overflow pada emulator.", "• ")
     add_bullet("Kendala 3 – Proteksi Batas Bawah Counter Laporan: Sesuai spesifikasi tugas, jumlah laporan tidak boleh bernilai negatif (< 0). Solusi teknis: Menerapkan guard condition pada metode _laporanSelesai() dengan pemeriksaan if (_jumlahLaporan > 0) sebelum pemanggilan setState(), serta memberikan styling disabled pada tombol 'Laporan Selesai' saat nilai laporan bernilai 0.", "• ")
 
     add_h2("6.5 Keterkaitan Aplikasi dengan Konsep Enam Pilar Smart City IKN Nusantara")
@@ -963,10 +1001,10 @@ class _PanelLaporanWargaState extends State<PanelLaporanWarga> {
     add_h1("8. LAMPIRAN: LINK REPOSITORI GITHUB")
     add_p("Seluruh basis kode sumber program lengkap untuk Bagian A (Praktikum No AI), Bagian B (Praktikum AI), Bagian C (Tugas Praktikum Nusantara Cerdas), pengujian unit otomatis, serta aset dokumentasi tangkapan layar telah diunggah ke repositori GitHub daring resmi mahasiswa:")
     
-    # Table for GitHub info
+    # Table for GitHub info - Plain Monochrome
     tbl_git = doc.add_table(rows=4, cols=2)
     tbl_git.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_table_borders(tbl_git)
+    set_table_borders(tbl_git, color="000000")
     
     git_info = [
         ("Nama Repositori", "PPBL-Modul01-707012400023"),
@@ -983,6 +1021,7 @@ class _PanelLaporanWargaState extends State<PanelLaporanWarga> {
         r0 = p0.add_run(k)
         r0.bold = True
         r0.font.size = Pt(10)
+        r0.font.color.rgb = RGBColor(0, 0, 0)
         
         c1 = row.cells[1]
         c1.width = Inches(4.3)
@@ -990,9 +1029,9 @@ class _PanelLaporanWargaState extends State<PanelLaporanWarga> {
         p1.paragraph_format.space_after = Pt(2)
         r1 = p1.add_run(v)
         r1.font.size = Pt(10)
+        r1.font.color.rgb = RGBColor(0, 0, 0)
         if i == 1:
             r1.bold = True
-            r1.font.color.rgb = RGBColor(13, 92, 58)
     
     add_p("Ringkasan Riwayat Komit Git (Git Commit History):", bold_prefix="Catatan Tambahan: ")
     add_code("""commit 48e1a0b - feat: inisialisasi repositori lengkap Modul 01 PPBL (Praktikum No AI, Praktikum AI, Tugas Praktikum Nusantara Cerdas) - 707012400023
@@ -1000,10 +1039,20 @@ Author: Ghazy Nabil Alghfari <ghazynabil@student.telkomuniversity.ac.id>
 Date:   Fri Sep 25 16:12:00 2026 +0700
 Branches: main -> origin/main""")
     
-    # Save the document
     output_filename = r"C:\Coding\Mobile Development\Flutter\PPBL\Pekan 01\Modul1_707012400023_GhazyNabilAlghfari.docx"
-    doc.save(output_filename)
-    print(f"Laporan berhasil dibuat: {output_filename}")
+    revisi_filename = r"C:\Coding\Mobile Development\Flutter\PPBL\Pekan 01\Modul1_707012400023_GhazyNabilAlghfari_Revisi.docx"
+    
+    # Save to revisi file first (guaranteed writable)
+    doc.save(revisi_filename)
+    print(f"Laporan revisi berhasil disimpan: {revisi_filename}")
+    
+    # Try to overwrite main file if user has closed Word
+    try:
+        doc.save(output_filename)
+        print(f"Laporan utama berhasil diperbarui: {output_filename}")
+    except PermissionError:
+        print(f"Catatan: Berkas utama {output_filename} sedang dibuka di Microsoft Word.")
+        print(f"Silakan gunakan berkas revisi yang baru: {revisi_filename}")
 
 if __name__ == "__main__":
     main()

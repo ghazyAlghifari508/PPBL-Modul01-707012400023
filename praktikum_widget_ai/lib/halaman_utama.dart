@@ -23,7 +23,7 @@ class HalamanUtama extends StatelessWidget {
             const ProfilCard(
               nama: 'Ghazy Nabil Alghfari',
               nim: '707012400023',
-              prodi: 'Kelas 48-03',
+              prodi: 'D4 Sistem Informasi Kota Cerdas (D4SIKC)',
             ),
             const SizedBox(height: 20),
             const Text(
